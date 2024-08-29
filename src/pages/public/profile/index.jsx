@@ -1,5 +1,5 @@
-import ListItem from '../components/ListItem';
-import Navbar from '../components/Navbar';
+import ListItem from '../../../helpers/public/components/ListItem';
+import Navbar from '../../../helpers/public/components/Navbar';
 
 function Profile() {
   return (

@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
-import Input from '../components/Input';
-import Navbar from '../components/Navbar';
-import { validate } from '../function/validate';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { inputData } from '../../../helpers/public/login/InputData';
+import Input from '../../../helpers/public/components/Input';
+import Navbar from '../../../helpers/public/components/Navbar';
+import { validate } from '../../../helpers/public/function/validate';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '' });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate(email, password, setErrors)) {
-      console.log('Form submitted');
+  const { register, handleSubmit, watch, setValue, setError, clearErrors, formState: { errors } } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: 0
     }
+  });
+
+  const onSubmit = (data) => {
+    const { email, password, rememberMe } = data;
+    if (validate(email, password, (fieldErrors) => {
+      for (const key in fieldErrors) {
+        setError(key, { type: 'manual', message: fieldErrors[key] });
+      }
+    })) {
+      console.log('Form submitted', { email, password, rememberMe });
+    }
+  };
+
+  const handleChange = (e) => {
+    const { id, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setValue(id, checked ? 1 : 0);
+    } else {
+      setValue(id, value);
+    }
+    clearErrors(id);
   };
 
   return (
@@ -25,26 +45,22 @@ function Login() {
         </div>
 
         <form 
-          onSubmit={handleSubmit} 
+          onSubmit={handleSubmit(onSubmit)} 
           className="bg-white p-8 rounded shadow-md w-full max-w-sm"
         >
-          <Input
-            label="Email"
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-          />
-
-          <Input
-            label="Password"
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={errors.password}
-          />
+          {inputData.map((input) => (
+            <Input
+              key={input.id}
+              label={input.label}
+              id={input.id}
+              type={input.type}
+              {...register(input.id, input.validation)}
+              value={watch(input.id)}
+              onChange={handleChange}
+              error={errors[input.id]?.message}
+              checked={input.type === 'checkbox' ? watch(input.id) : undefined}
+            />
+          ))}
 
           <button 
             type="submit" 
