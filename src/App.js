@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import './input.css'
+import './input.css';
 import Dashboard from './pages/admin/dashboard';
 import ShippingComps from './pages/admin/shipping';
 import ShippingCompsForm from './pages/admin/shipping/form';
@@ -16,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/shipping-comps" element={<ShippingComps />} />
         <Route path="/shipping-comps/form" element={<ShippingCompsForm />} />
+        <Route path="/shipping-comps/form/:id" element={<ShippingCompsForm />} />
       </Routes>
     </Router>
   );

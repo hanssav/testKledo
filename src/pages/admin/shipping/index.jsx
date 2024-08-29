@@ -1,10 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import CoverLayout from '../../../helpers/admin/components/CoverLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function ShippingComps() {
+  const [shippingComps, setShippingComps] = useState([]);
+  const [filteredComps, setFilteredComps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const user = useSelector((state) => state.auth.value.data.data);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchShippingCompanies = async () => {
+      try {
+        const token = user.access_token;
+        const response = await axios.get('https://api.jokolodang.com/api/v1/finance/shippingComps', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = response.data.data;
+        setShippingComps(data);
+        setFilteredComps(data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError(error.message || 'Error fetching shipping companies');
+      }
+    };
+
+    fetchShippingCompanies();
+  }, [user.access_token]);
+
+  useEffect(() => {
+    const filterData = () => {
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      const filtered = shippingComps.filter(comp =>
+        comp.name.toLowerCase().includes(lowercasedSearchTerm)
+      );
+      setFilteredComps(filtered);
+    };
+
+    filterData();
+  }, [searchTerm, shippingComps]);
+
+  const handleRowClick = (id) => {
+    navigate(`/shipping-comps/form/${id}`);
+  };
+
   return (
     <CoverLayout>
       <div className="flex justify-between items-center mb-6">
@@ -27,33 +76,38 @@ export default function ShippingComps() {
             <input 
               type="text" 
               placeholder="Search..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="border border-gray-300 rounded-lg p-2 pl-8"
             />
           </div>
         </div>
       </div>
 
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-200 text-left">
-            <th className="py-2 px-4 border-b w-3/4">Nama</th>
-            <th className="py-2 px-4 border-b w-1/4">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="py-2 px-4 border-b">Sample Name</td>
-            <td className="py-2 px-4 border-b flex space-x-2">
-              <button className="text-blue-500 hover:text-blue-700">
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="text-red-500 hover:text-red-700">
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="py-2 px-4 border-b w-full">Nama</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredComps.map((comp) => (
+              <tr 
+                key={comp.id} 
+                onClick={() => handleRowClick(comp.id)}
+                className="cursor-pointer hover:bg-gray-100"
+              >
+                <td className="py-2 px-4 border-b">{comp.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </CoverLayout>
   );
 }

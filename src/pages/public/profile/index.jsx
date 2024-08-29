@@ -23,11 +23,11 @@ function Profile() {
 
             <div>
               <ul className="space-y-4">
-                <ListItem label="Nama" value="John Doe" />
-                <ListItem label="Alamat" value="123 Main St, Anytown, USA" />
-                <ListItem label="No HP" value="(555) 123-4567" />
-                <ListItem label="Email" value="johndoe@example.com" />
-                <ListItem label="Moto" value="Live and Let Live" />
+                <ListItem label="Nama" value="Handi Irawan" />
+                <ListItem label="Alamat" value="Jl Dusun Bringin ds wonosari Kabupaten Kediri" />
+                <ListItem label="No HP" value="085655512335" />
+                <ListItem label="Email" value="handiirawanub@gmail.com" />
+                <ListItem label="Moto" value="" />
               </ul>
             </div>
           </div>

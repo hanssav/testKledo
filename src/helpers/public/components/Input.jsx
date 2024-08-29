@@ -3,9 +3,6 @@ import React from 'react';
 function Input({ label, id, type, value, onChange, error, checked, ...rest }) {
   return (
     <div className="mb-4">
-      <label htmlFor={id} className="block text-gray-700 mb-2">
-        {label}
-      </label>
       {type === 'checkbox' ? (
         <div className="flex items-center">
           <input
@@ -16,12 +13,13 @@ function Input({ label, id, type, value, onChange, error, checked, ...rest }) {
             className={`mr-2 ${error ? 'border-red-500' : ''}`}
             {...rest}
           />
-          <label htmlFor={id} className="text-gray-700">
-            {label}
-          </label>
+          <span className="text-gray-700">{label}</span>
         </div>
       ) : (
         <>
+          <label htmlFor={id} className="block text-gray-700 mb-2">
+            {label}
+          </label>
           <input
             type={type}
             id={id}
